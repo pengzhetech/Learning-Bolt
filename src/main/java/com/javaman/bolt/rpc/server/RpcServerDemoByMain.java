@@ -17,9 +17,6 @@
 package com.javaman.bolt.rpc.server;
 
 import com.alipay.remoting.ConnectionEventType;
-import com.javaman.bolt.rpc.CONNECTEventProcessor;
-import com.javaman.bolt.rpc.DISCONNECTEventProcessor;
-import com.javaman.bolt.rpc.SimpleServerUserProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,15 +27,14 @@ import org.slf4j.LoggerFactory;
  * @version $Id: RpcServerDemoByMain.java, v 0.1 2018-04-10 10:37 tsui Exp $
  */
 public class RpcServerDemoByMain {
+
     static Logger logger = LoggerFactory.getLogger(RpcServerDemoByMain.class);
 
     BoltServer server;
-
     int port = 8999;
-
     SimpleServerUserProcessor serverUserProcessor = new SimpleServerUserProcessor();
-    CONNECTEventProcessor serverConnectProcessor = new CONNECTEventProcessor();
-    DISCONNECTEventProcessor serverDisConnectProcessor = new DISCONNECTEventProcessor();
+    ServerCONNECTEventProcessor serverConnectProcessor = new ServerCONNECTEventProcessor();
+    ServerDISCONNECTEventProcessor serverDisConnectProcessor = new ServerDISCONNECTEventProcessor();
 
     public RpcServerDemoByMain() {
         // 1. create a Rpc server with port assigned
@@ -50,9 +46,9 @@ public class RpcServerDemoByMain {
         server.registerUserProcessor(serverUserProcessor);
         // 4. server start
         if (server.start()) {
-         logger.info("---------------------start ok---------------------");
+            logger.info("---------------------start ok---------------------");
         } else {
-          logger.error("start failed");
+            logger.error("start failed");
         }
         // server.getRpcServer().stop();
     }

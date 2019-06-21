@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.javaman.bolt.rpc;
+package com.javaman.bolt.rpc.client;
 
 import com.alipay.remoting.BizContext;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.NamedThreadFactory;
 import com.alipay.remoting.rpc.protocol.SyncUserProcessor;
+import com.javaman.bolt.rpc.RequestBody;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class SimpleClientUserProcessor extends SyncUserProcessor<RequestBody> {
     /**
      * default is true
      */
-    private boolean timeoutDiscard = true;
+    private boolean timeoutDiscard = false;
 
     private AtomicInteger invokeTimes = new AtomicInteger();
     private AtomicInteger onewayTimes = new AtomicInteger();
@@ -71,33 +72,16 @@ public class SimpleClientUserProcessor extends SyncUserProcessor<RequestBody> {
 
     public SimpleClientUserProcessor() {
         this.delaySwitch = false;
-        this.delayMs = 0;
+        this.delayMs = 5550;
         this.executor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
-    }
-
-    public SimpleClientUserProcessor(long delay) {
-        this();
-        if (delay < 0) {
-            throw new IllegalArgumentException("delay time illegal!");
-        }
-        this.delaySwitch = true;
-        this.delayMs = delay;
-    }
-
-    public SimpleClientUserProcessor(long delay, int core, int max, int keepaliveSeconds,
-                                     int workQueue) {
-        this(delay);
-        this.executor = new ThreadPoolExecutor(core, max, keepaliveSeconds, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(workQueue), new NamedThreadFactory(
-                "Request-process-pool"));
     }
 
     // ~~~ override methods
 
     @Override
     public Object handleRequest(BizContext bizCtx, RequestBody request) throws Exception {
-        logger.warn("-----------------------Request received from server:" + request);
+        logger.warn("-------客户端收到服务端的数据----------------Request received from server:" + request);
         if (bizCtx.isRequestTimeout()) {
             String errMsg = "Stop process in client biz thread, already timeout!";
             logger.warn(errMsg);

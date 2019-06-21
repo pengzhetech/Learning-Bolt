@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.javaman.bolt.rpc;
+package com.javaman.bolt.rpc.server;
 
 import com.alipay.remoting.BizContext;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.NamedThreadFactory;
 import com.alipay.remoting.rpc.protocol.SyncUserProcessor;
+import com.javaman.bolt.rpc.RequestBody;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,28 +69,11 @@ public class SimpleServerUserProcessor extends SyncUserProcessor<RequestBody> {
             new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
     }
 
-    public SimpleServerUserProcessor(long delay) {
-        this();
-        if (delay < 0) {
-            throw new IllegalArgumentException("delay time illegal!");
-        }
-        this.delaySwitch = true;
-        this.delayMs = delay;
-    }
-
-    public SimpleServerUserProcessor(long delay, int core, int max, int keepaliveSeconds,
-                                     int workQueue) {
-        this(delay);
-        this.executor = new ThreadPoolExecutor(core, max, keepaliveSeconds, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(workQueue), new NamedThreadFactory(
-                "Request-process-pool"));
-    }
-
     // ~~~ override methods
 
     @Override
     public Object handleRequest(BizContext bizCtx, RequestBody request) throws Exception {
-        logger.warn("--------------------------Request received:" + request + ", timeout:" + bizCtx.getClientTimeout()
+        logger.warn("------------服务端收到客户端的数据--------------Request received:" + request + ", timeout:" + bizCtx.getClientTimeout()
                     + ", arriveTimestamp:" + bizCtx.getArriveTimestamp());
 
         if (bizCtx.isRequestTimeout()) {

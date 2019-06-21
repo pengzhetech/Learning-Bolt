@@ -14,11 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.javaman.bolt.rpc;
+package com.javaman.bolt.rpc.server;
 
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventProcessor;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,20 +30,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ConnectionEventProcessor for ConnectionEventType.CONNECT
- * 
+ *
  * @author xiaomin.cxm
- * @version $Id: CONNECTEventProcessor.java, v 0.1 Apr 8, 2016 10:58:48 AM xiaomin.cxm Exp $
+ * @version $Id: ServerCONNECTEventProcessor.java, v 0.1 Apr 8, 2016 10:58:48 AM xiaomin.cxm Exp $
  */
-public class CONNECTEventProcessor implements ConnectionEventProcessor {
+@Getter
+@Setter
+public class ServerCONNECTEventProcessor implements ConnectionEventProcessor {
 
-    private AtomicBoolean  connected    = new AtomicBoolean();
-    private AtomicInteger  connectTimes = new AtomicInteger();
+    static Logger logger = LoggerFactory.getLogger(ServerCONNECTEventProcessor.class);
+
+    private AtomicBoolean connected = new AtomicBoolean();
+    private AtomicInteger connectTimes = new AtomicInteger();
     private Connection connection;
-    private String         remoteAddr;
-    private CountDownLatch latch        = new CountDownLatch(1);
+    private String remoteAddr;
+    private CountDownLatch latch = new CountDownLatch(1);
 
     @Override
     public void onEvent(String remoteAddr, Connection conn) {
+        logger.info("ServerCONNECTEventProcessor connected 服务端与客户端连接上了-----哦也");
         Assert.assertNotNull(remoteAddr);
         doCheckConnection(conn);
         this.remoteAddr = remoteAddr;
@@ -51,6 +60,7 @@ public class CONNECTEventProcessor implements ConnectionEventProcessor {
 
     /**
      * do check connection
+     *
      * @param conn
      */
     private void doCheckConnection(Connection conn) {
@@ -60,26 +70,6 @@ public class CONNECTEventProcessor implements ConnectionEventProcessor {
         Assert.assertNotNull(conn.getChannel());
         Assert.assertNotNull(conn.getUrl());
         Assert.assertNotNull(conn.getChannel().attr(Connection.CONNECTION).get());
-    }
-
-    public boolean isConnected() throws InterruptedException {
-        latch.await();
-        return this.connected.get();
-    }
-
-    public int getConnectTimes() throws InterruptedException {
-        latch.await();
-        return this.connectTimes.get();
-    }
-
-    public Connection getConnection() throws InterruptedException {
-        latch.await();
-        return this.connection;
-    }
-
-    public String getRemoteAddr() throws InterruptedException {
-        latch.await();
-        return this.remoteAddr;
     }
 
     public void reset() {

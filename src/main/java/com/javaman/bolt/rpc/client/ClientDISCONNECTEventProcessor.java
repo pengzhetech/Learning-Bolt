@@ -14,28 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.javaman.bolt.rpc;
+package com.javaman.bolt.rpc.client;
 
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventProcessor;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ConnectionEventProcessor for ConnectionEventType.CLOSE
- * 
+ *
  * @author xiaomin.cxm
- * @version $Id: DISCONNECTEventProcessor.java, v 0.1 Apr 8, 2016 10:58:48 AM xiaomin.cxm Exp $
+ * @version $Id: ClientDISCONNECTEventProcessor.java, v 0.1 Apr 8, 2016 10:58:48 AM xiaomin.cxm Exp $
  */
-public class DISCONNECTEventProcessor implements ConnectionEventProcessor {
+public class ClientDISCONNECTEventProcessor implements ConnectionEventProcessor {
 
-    private AtomicBoolean dicConnected    = new AtomicBoolean();
+    static Logger logger = LoggerFactory.getLogger(ClientDISCONNECTEventProcessor.class);
+
+    private AtomicBoolean dicConnected = new AtomicBoolean();
     private AtomicInteger disConnectTimes = new AtomicInteger();
 
     @Override
     public void onEvent(String remoteAddr, Connection conn) {
+        logger.info("ClientDISCONNECTEventProcessor 客户端与服务端断链了-----");
         Assert.assertNotNull(conn);
         dicConnected.set(true);
         disConnectTimes.incrementAndGet();
