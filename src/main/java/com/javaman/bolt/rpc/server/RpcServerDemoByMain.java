@@ -37,6 +37,9 @@ public class RpcServerDemoByMain {
    static BoltServer server;
     int port = 8999;
     SimpleServerUserProcessor serverUserProcessor = new SimpleServerUserProcessor();
+
+    AsyncServerUserProcessor asyncServerUserProcessor = new AsyncServerUserProcessor();
+
     ServerCONNECTEventProcessor serverConnectProcessor = new ServerCONNECTEventProcessor();
     ServerDISCONNECTEventProcessor serverDisConnectProcessor = new ServerDISCONNECTEventProcessor();
 
@@ -47,7 +50,7 @@ public class RpcServerDemoByMain {
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);
         server.addConnectionEventProcessor(ConnectionEventType.CLOSE, serverDisConnectProcessor);
         // 3. register user processor for client request
-        server.registerUserProcessor(serverUserProcessor);
+        server.registerUserProcessor(asyncServerUserProcessor);
 
 
 
