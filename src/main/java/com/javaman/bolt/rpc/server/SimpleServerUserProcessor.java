@@ -30,43 +30,53 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * a demo user processor for rpc server
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: SimpleServerUserProcessor.java, v 0.1 Jan 7, 2016 3:01:49 PM xiaomin.cxm Exp $
  */
 public class SimpleServerUserProcessor extends SyncUserProcessor<RequestBody> {
 
-    /** logger */
-    private static final Logger logger         = LoggerFactory
-                                                   .getLogger(SimpleServerUserProcessor.class);
+    /**
+     * logger
+     */
+    private static final Logger logger = LoggerFactory
+            .getLogger(SimpleServerUserProcessor.class);
 
-    /** delay milliseconds */
-    private long                delayMs;
+    /**
+     * delay milliseconds
+     */
+    private long delayMs;
 
-    /** whether delay or not */
-    private boolean             delaySwitch;
+    /**
+     * whether delay or not
+     */
+    private boolean delaySwitch;
 
-    /** executor */
-    private ThreadPoolExecutor  executor;
+    /**
+     * executor
+     */
+    private ThreadPoolExecutor executor;
 
-    /** default is true */
-    private boolean             timeoutDiscard = true;
+    /**
+     * default is true
+     */
+    private boolean timeoutDiscard = true;
 
-    private AtomicInteger       invokeTimes    = new AtomicInteger();
+    private AtomicInteger invokeTimes = new AtomicInteger();
 
-    private AtomicInteger       onewayTimes    = new AtomicInteger();
-    private AtomicInteger       syncTimes      = new AtomicInteger();
-    private AtomicInteger       futureTimes    = new AtomicInteger();
-    private AtomicInteger       callbackTimes  = new AtomicInteger();
+    private AtomicInteger onewayTimes = new AtomicInteger();
+    private AtomicInteger syncTimes = new AtomicInteger();
+    private AtomicInteger futureTimes = new AtomicInteger();
+    private AtomicInteger callbackTimes = new AtomicInteger();
 
-    private String              remoteAddr;
-    private CountDownLatch      latch          = new CountDownLatch(1);
+    private String remoteAddr;
+    private CountDownLatch latch = new CountDownLatch(1);
 
     public SimpleServerUserProcessor() {
         this.delaySwitch = false;
         this.delayMs = 0;
         this.executor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
+                new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
     }
 
     // ~~~ override methods
@@ -74,14 +84,14 @@ public class SimpleServerUserProcessor extends SyncUserProcessor<RequestBody> {
     @Override
     public Object handleRequest(BizContext bizCtx, RequestBody request) throws Exception {
         logger.warn("------------服务端收到客户端的数据--------------Request received:" + request + ", timeout:" + bizCtx.getClientTimeout()
-                    + ", arriveTimestamp:" + bizCtx.getArriveTimestamp());
+                + ", arriveTimestamp:" + bizCtx.getArriveTimestamp());
 
-        if (bizCtx.isRequestTimeout()) {
+       /* if (bizCtx.isRequestTimeout()) {
             String errMsg = "Stop process in server biz thread, already timeout!";
             processTimes(request);
             logger.warn(errMsg);
             throw new Exception(errMsg);
-        }
+        }*/
 
         this.remoteAddr = bizCtx.getRemoteAddress();
 
@@ -94,20 +104,20 @@ public class SimpleServerUserProcessor extends SyncUserProcessor<RequestBody> {
         if (logger.isInfoEnabled()) {
             logger.info("Server User processor process wait time {}", waittime);
         }
-
         latch.countDown();
+        RpcServerDemoByMain.server.getRpcServer().invokeSync(remoteAddr, new RequestBody(124444443, "12312312"), 1231231);
         logger.warn("Server User processor say, remote address is [" + this.remoteAddr + "].");
         Assert.assertEquals(RequestBody.class, request.getClass());
         processTimes(request);
-        if (!delaySwitch) {
-            return RequestBody.DEFAULT_SERVER_RETURN_STR;
-        }
-        try {
+      /*  if (!delaySwitch) {
+            return new RequestBody(123, "12312312");
+        }*/
+     /*   try {
             Thread.sleep(delayMs);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-        return RequestBody.DEFAULT_SERVER_RETURN_STR;
+        }*/
+        return new RequestBody(124444443, "12312312");
     }
 
     @Override
@@ -131,8 +141,8 @@ public class SimpleServerUserProcessor extends SyncUserProcessor<RequestBody> {
     }
 
     public int getInvokeTimesEachCallType(RequestBody.InvokeType type) {
-        return new int[] { this.onewayTimes.get(), this.syncTimes.get(), this.futureTimes.get(),
-                this.callbackTimes.get() }[type.ordinal()];
+        return new int[]{this.onewayTimes.get(), this.syncTimes.get(), this.futureTimes.get(),
+                this.callbackTimes.get()}[type.ordinal()];
     }
 
     public String getRemoteAddr() throws InterruptedException {
@@ -155,6 +165,7 @@ public class SimpleServerUserProcessor extends SyncUserProcessor<RequestBody> {
     }
 
     // ~~~ getters and setters
+
     /**
      * Getter method for property <tt>timeoutDiscard</tt>.
      *

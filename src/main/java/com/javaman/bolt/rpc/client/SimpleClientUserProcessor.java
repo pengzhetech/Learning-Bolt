@@ -72,22 +72,23 @@ public class SimpleClientUserProcessor extends SyncUserProcessor<RequestBody> {
 
     public SimpleClientUserProcessor() {
         this.delaySwitch = false;
-        this.delayMs = 5550;
+        this.delayMs = 0;
         this.executor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
     }
 
     // ~~~ override methods
 
+
     @Override
     public Object handleRequest(BizContext bizCtx, RequestBody request) throws Exception {
         logger.warn("-------客户端收到服务端的数据----------------Request received from server:" + request);
-        if (bizCtx.isRequestTimeout()) {
+       /* if (bizCtx.isRequestTimeout()) {
             String errMsg = "Stop process in client biz thread, already timeout!";
             logger.warn(errMsg);
             processTimes(request);
             throw new Exception(errMsg);
-        }
+        }*/
         Assert.assertEquals(RequestBody.class, request.getClass());
 
         Long waittime = (Long) bizCtx.getInvokeContext().get(InvokeContext.BOLT_PROCESS_WAIT_TIME);
@@ -97,15 +98,15 @@ public class SimpleClientUserProcessor extends SyncUserProcessor<RequestBody> {
         }
 
         processTimes(request);
-        if (!delaySwitch) {
+       /* if (!delaySwitch) {
             return RequestBody.DEFAULT_CLIENT_RETURN_STR;
-        }
-        try {
+        }*/
+      /*  try {
             Thread.sleep(delayMs);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-        return RequestBody.DEFAULT_CLIENT_RETURN_STR;
+        }*/
+        return new RequestBody(1111, "123434");
     }
 
     @Override

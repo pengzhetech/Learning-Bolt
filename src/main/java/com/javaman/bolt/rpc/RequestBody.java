@@ -22,7 +22,11 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.IntStream;
 
 /**
  * biz request as a demo
@@ -66,6 +70,26 @@ public class RequestBody implements Serializable {
     public RequestBody(int id, String msg) {
         this.id = id;
         this.msg = msg;
+    }
+
+    public static void main(String[] args) {
+
+        Map<String, String> map = new HashMap<>();
+        IntStream.rangeClosed(0, 10).forEach(index -> {
+            map.put("key", String.valueOf(index));
+        });
+        System.out.println(map);
+
+
+        Map<String, String> cuMap = new ConcurrentHashMap<>();
+        IntStream.rangeClosed(0, 10).forEach(index -> {
+            cuMap.putIfAbsent("key", String.valueOf(index));
+        });
+        System.out.println(cuMap);
+
+        System.out.println(null==null);
+
+
     }
 
     static public enum InvokeType {

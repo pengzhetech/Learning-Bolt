@@ -19,6 +19,7 @@ package com.javaman.bolt.rpc.client;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
+import com.alipay.remoting.rpc.RpcResponseFuture;
 import com.javaman.bolt.rpc.RequestBody;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -55,7 +56,9 @@ public class RpcClientDemoByMain {
         new RpcClientDemoByMain();
         RequestBody req = new RequestBody(2, "hello world sync");
         try {
-            String res = (String) client.invokeSync(addr, req, 80000);
+            RequestBody res = (RequestBody) client.invokeSync(addr, req, 80000);
+       //     RpcResponseFuture rpcResponseFuture = client.invokeWithFuture(addr, req, 8000);
+
             logger.info("客户端调用结果----invoke sync result = [" + res + "]");
         } catch (RemotingException e) {
             String errMsg = "RemotingException caught in oneway!";

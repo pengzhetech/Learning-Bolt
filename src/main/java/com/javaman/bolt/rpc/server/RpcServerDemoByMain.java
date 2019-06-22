@@ -17,6 +17,9 @@
 package com.javaman.bolt.rpc.server;
 
 import com.alipay.remoting.ConnectionEventType;
+import com.alipay.remoting.exception.RemotingException;
+import com.javaman.bolt.rpc.RequestBody;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,24 +29,28 @@ import org.slf4j.LoggerFactory;
  * @author tsui
  * @version $Id: RpcServerDemoByMain.java, v 0.1 2018-04-10 10:37 tsui Exp $
  */
+@Data
 public class RpcServerDemoByMain {
 
     static Logger logger = LoggerFactory.getLogger(RpcServerDemoByMain.class);
 
-    BoltServer server;
+   static BoltServer server;
     int port = 8999;
     SimpleServerUserProcessor serverUserProcessor = new SimpleServerUserProcessor();
     ServerCONNECTEventProcessor serverConnectProcessor = new ServerCONNECTEventProcessor();
     ServerDISCONNECTEventProcessor serverDisConnectProcessor = new ServerDISCONNECTEventProcessor();
 
-    public RpcServerDemoByMain() {
+    public RpcServerDemoByMain() throws InterruptedException, RemotingException {
         // 1. create a Rpc server with port assigned
-        server = new BoltServer(port);
+        server = new BoltServer(port,true);
         // 2. add processor for connect and close event if you need
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);
         server.addConnectionEventProcessor(ConnectionEventType.CLOSE, serverDisConnectProcessor);
         // 3. register user processor for client request
         server.registerUserProcessor(serverUserProcessor);
+
+
+
         // 4. server start
         if (server.start()) {
             logger.info("---------------------start ok---------------------");
@@ -53,7 +60,7 @@ public class RpcServerDemoByMain {
         // server.getRpcServer().stop();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemotingException, InterruptedException {
         new RpcServerDemoByMain();
     }
 }
